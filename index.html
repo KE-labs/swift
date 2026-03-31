@@ -10,7 +10,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0C513F;
+      --bg: #0a4535;
       --surface: #256252;
       --surface2: #245a4b;
       --border: #3B7364;
@@ -206,10 +206,10 @@
         <div class="opt-body"><div class="opt-name">Order food</div><div class="opt-desc">From nearby restaurants</div></div>
         <div class="opt-badge">Popular</div>
       </div>
-      <div class="option-item" onclick="go('s3-grocery')">
-        <div class="opt-icon">🛒</div>
-        <div class="opt-body"><div class="opt-name">Buy groceries</div><div class="opt-desc">We shop, you relax</div></div>
-        <div class="opt-arrow">›</div>
+      <div class="option-item" onclick="go('s4-confirm')">
+        <div class="opt-icon">🔄</div>
+        <div class="opt-body"><div class="opt-name">Multiple waybills</div><div class="opt-desc">Batch pickup or delivery across locations</div></div>
+        <div class="opt-badge">Batch</div>
       </div>
     </div>
   </div>
@@ -270,7 +270,7 @@
       </div>
       <div class="option-item" onclick="go('s3-waybill')">
         <div class="opt-icon">📋</div>
-        <div class="opt-body"><div class="opt-name">Waybill / documents</div><div class="opt-desc">Pickup or drop off important papers</div></div>
+        <div class="opt-body"><div class="opt-name">Waybill</div><div class="opt-desc">Pickup or drop off waybill to different terminals</div></div>
         <div class="opt-arrow">›</div>
       </div>
       <div class="option-item" onclick="go('s3-pharmacy')">
@@ -381,8 +381,8 @@
   <!-- Screen 3: Waybill -->
   <div class="screen" id="s3-waybill">
     <div class="hero">
-      <div class="hero-tag">Waybill & Documents</div>
-      <h1>Handle your <em>papers</em></h1>
+      <div class="hero-tag">Waybills</div>
+      <h1>Handle your <em>waybill</em></h1>
     </div>
     <div class="section-label">What do you need?</div>
     <div class="option-list">
