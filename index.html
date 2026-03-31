@@ -12,10 +12,10 @@
     :root {
       --bg: #0C513F;
       --surface: #256252;
-      --surface2: #1e1e1e;
+      --surface2: #245a4b;
       --border: #3B7364;
       --accent: #f0c93a;
-      --text: #f5f5f0;
+      --text: #ffffff;
       --muted: #888;
       --radius: 16px;
     }
@@ -24,6 +24,7 @@
       background: var(--bg);
       font-family: 'DM Sans', sans-serif;
       color: var(--text);
+      margin: 1rem 0;
       min-height: 100vh;
       display: flex;
       align-items: flex-start;
@@ -164,7 +165,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <div class="logo">Swift<span>Go</span></div>
+    <div class="logo">Swift<span>Ride</span></div>
     <div class="back-btn" id="back-btn" style="display:none" onclick="goBack()">←</div>
   </div>
 
@@ -183,13 +184,17 @@
       <p>Fast, reliable dispatch at your fingertips.</p>
     </div>
     <div class="choice-grid">
-      <div class="choice-card accent-card" onclick="go('s2-ride')">
-        <span class="card-icon">🚗</span>
+      <div class="choice-card accent-card"  onclick="go('s2-ride')">
+        <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;" >
+            <img src="/image/undraw_on-the-way_zwi3 (1).svg" width="100px" height="64px" >
+        </span>
         <div class="card-label">I need a ride</div>
         <div class="card-sub">Go anywhere, anytime</div>
       </div>
       <div class="choice-card" onclick="go('s2-errand')">
-        <span class="card-icon">📦</span>
+        <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;">
+            <img src="/image/undraw_empty_4zx0 (1).svg" width="100px" height="64px" >
+        </span>
         <div class="card-label">Run an errand</div>
         <div class="card-sub">Pick up, deliver, buy</div>
       </div>
