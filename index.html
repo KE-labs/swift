@@ -5,530 +5,429 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SwiftGo — Dispatch App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0a4535;
-      --surface: #256252;
-      --surface2: #245a4b;
-      --border: #3B7364;
-      --accent: #f0c93a;
-      --text: #ffffff;
-      --muted: #888;
-      --radius: 16px;
-    }
-
-    body {
-      background: var(--bg);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      margin: 1rem 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-    }
-
-    .app {
-      max-width: 420px;
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      padding: 20px 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
-    .logo span { color: var(--accent); }
-    .back-btn {
-      width: 36px; height: 36px; border-radius: 10px;
-      border: 1px solid var(--border); background: var(--surface);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 16px; transition: all .2s;
-    }
-    .back-btn:hover { background: var(--surface2); }
-
-    .screen { display: none; flex-direction: column; flex: 1; padding: 0 24px 32px; animation: slideIn .3s ease; }
-    .screen.active { display: flex; }
-    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-    .hero { padding: 28px 0 24px; }
-    .hero-tag {
-      display: inline-block; font-size: 11px; font-weight: 500;
-      letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent);
-      background: rgba(240,201,58,0.1); border: 1px solid rgba(240,201,58,0.2);
-      padding: 4px 10px; border-radius: 20px; margin-bottom: 14px;
-    }
-    .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 30px; line-height: 1.15; letter-spacing: -0.5px; }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero p { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
-
-    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .choice-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px 16px;
-      cursor: pointer; transition: all .2s;
-    }
-    .choice-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
-    .card-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
-    .card-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-    .choice-card.accent-card { background: var(--accent); border-color: var(--accent); }
-    .choice-card.accent-card .card-label { color: #0a0a0a; }
-    .choice-card.accent-card .card-sub { color: rgba(10,10,10,0.6); }
-
-    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; margin-top: 4px; }
-
-    .option-list { display: flex; flex-direction: column; gap: 8px; }
-    .option-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 16px; cursor: pointer;
-      display: flex; align-items: center; gap: 14px; transition: all .2s;
-    }
-    .option-item:hover { border-color: rgba(240,201,58,0.4); background: var(--surface2); }
-    .opt-icon {
-      font-size: 22px; width: 44px; height: 44px; background: var(--surface2);
-      border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .opt-body { flex: 1; }
-    .opt-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; }
-    .opt-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
-    .opt-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(240,201,58,0.1); color: var(--accent); border: 1px solid rgba(240,201,58,0.2); white-space: nowrap; }
-    .opt-arrow { color: var(--muted); font-size: 14px; }
-
-    .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s; color: var(--muted); }
-    .chip.selected { background: rgba(240,201,58,0.15); border-color: var(--accent); color: var(--accent); }
-
-    .route-builder { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
-    .route-stop { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
-    .route-stop:last-child { border-bottom: none; }
-    .stop-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .stop-dot.green { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.5); }
-    .stop-dot.amber { background: var(--accent); box-shadow: 0 0 8px rgba(240,201,58,0.5); }
-    .stop-dot.red { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.5); }
-    .stop-label { font-size: 13px; color: var(--muted); }
-    .stop-value { font-size: 13px; font-weight: 500; color: var(--text); }
-    .add-stop { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 500; }
-    .add-stop:hover { background: rgba(240,201,58,0.05); }
-
-    .cta-btn {
-      width: 100%; padding: 16px; background: var(--accent); color: #0a0a0a;
-      border: none; border-radius: 14px; font-family: 'Syne', sans-serif;
-      font-weight: 700; font-size: 15px; cursor: pointer; margin-top: auto;
-      transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .cta-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(240,201,58,0.3); }
-    .cta-btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-    .cta-btn.secondary:hover { box-shadow: none; }
-
-    .confirm-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
-    .confirm-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 14px; }
-    .confirm-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-    .confirm-row:last-child { border-bottom: none; }
-    .confirm-row .label { color: var(--muted); }
-    .confirm-row .value { font-weight: 500; }
-    .price-row { display: flex; justify-content: space-between; align-items: center; }
-    .price-label { font-size: 13px; color: var(--muted); }
-    .price-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--accent); }
-
-    .progress { display: flex; gap: 6px; justify-content: center; padding: 16px 0 8px; }
-    .dot { width: 6px; height: 6px; border-radius: 3px; background: var(--border); transition: all .3s; }
-    .dot.active { width: 20px; background: var(--accent); }
-
-    .schedule-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; cursor: pointer;
-    }
-    .schedule-left { display: flex; align-items: center; gap: 10px; }
-    .schedule-icon { font-size: 20px; }
-    .schedule-text .title { font-size: 13px; font-weight: 500; }
-    .schedule-text .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .toggle { width: 40px; height: 22px; background: var(--border); border-radius: 11px; position: relative; transition: background .2s; }
-    .toggle.on { background: var(--accent); }
-    .toggle-thumb { width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform .2s; }
-    .toggle.on .toggle-thumb { transform: translateX(18px); }
-
-    .spacer { flex: 1; }
-    .mt16 { margin-top: 16px; }
-    .success-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px 0; }
-  </style>
 </head>
+
 <body>
-<div class="app">
-  <div class="header">
-    <div class="logo">Swift<span>Ride</span></div>
-    <div class="back-btn" id="back-btn" style="display:none" onclick="goBack()">←</div>
-  </div>
+  <div class="app">
+    <div class="header">
+      <div class="logo">Swift<span>Ride</span></div>
+      <div class="h-nav">
+        <hr style="width: 20px; border: 1px solid white" />
+        <hr style="width: 20px; border: 1px solid white;" />
+        <hr style="width: 20px; border: 1px solid white;" />
+      </div>
+    </div>
 
-  <div class="progress">
-    <div class="dot active" id="d1"></div>
-    <div class="dot" id="d2"></div>
-    <div class="dot" id="d3"></div>
-    <div class="dot" id="d4"></div>
-  </div>
+    <div class="progress">
+      <div class="dot active" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+      <div class="dot" id="d4"></div>
+    </div>
 
-  <!-- Screen 1: Home -->
-  <div class="screen active" id="s1">
-    <div class="hero">
-      <div class="hero-tag">Speed & Efficiency</div>
-      <h1>What do you <em>need</em> today?</h1>
-      <p>Fast, reliable dispatch at your fingertips.</p>
+    <!-- Screen 1: Home -->
+    <div class="screen active" id="s1">
+      <div class="hero">
+        <div class="hero-tag">Speed & Efficiency</div>
+        <h1>What do you <em>need</em> today?</h1>
+        <p>Fast, reliable dispatch at your fingertips.</p>
+      </div>
+      <div class="choice-grid">
+        <div class="choice-card accent-card"  onclick="go('s2-ride')">
+          <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;" >
+              <img src="/image/undraw_on-the-way_zwi3 (1).svg" width="100px" height="64px" >
+          </span>
+          <div class="card-label">I need a ride</div>
+          <div class="card-sub">Go anywhere, anytime</div>
+        </div>
+        <div class="choice-card" onclick="go('s2-errand')">
+          <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;">
+              <img src="/image/undraw_empty_4zx0 (1).svg" width="100px" height="64px" >
+          </span>
+          <div class="card-label">Run an errand</div>
+          <div class="card-sub">Pick up, deliver, buy</div>
+        </div>
+      </div>
+      <div class="section-label">Quick access</div>
+      <div class="option-list">
+        <div class="option-item" onclick="go('s3-food')">
+          <div class="opt-icon">🍔</div>
+          <div class="opt-body"><div class="opt-name">Order food</div><div class="opt-desc">From nearby restaurants</div></div>
+          <div class="opt-badge">Popular</div>
+        </div>
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">🔄</div>
+          <div class="opt-body"><div class="opt-name">Multiple waybills</div><div class="opt-desc">Batch pickup or delivery across locations</div></div>
+          <div class="opt-badge">Batch</div>
+        </div>
+        <div class="option-item" onclick="go('s3-ride-schedule')">
+          <div class="opt-icon">🕐</div>
+          <div class="opt-body"><div class="opt-name">Schedule a ride</div><div class="opt-desc">Book ahead for a specific date & time</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+      </div>
     </div>
-    <div class="choice-grid">
-      <div class="choice-card accent-card"  onclick="go('s2-ride')">
-        <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;" >
-            <img src="/image/undraw_on-the-way_zwi3 (1).svg" width="100px" height="64px" >
-        </span>
-        <div class="card-label">I need a ride</div>
-        <div class="card-sub">Go anywhere, anytime</div>
-      </div>
-      <div class="choice-card" onclick="go('s2-errand')">
-        <span class="card-icon" style="display: flex; align-items: center; flex-direction: column;">
-            <img src="/image/undraw_empty_4zx0 (1).svg" width="100px" height="64px" >
-        </span>
-        <div class="card-label">Run an errand</div>
-        <div class="card-sub">Pick up, deliver, buy</div>
-      </div>
-    </div>
-    <div class="section-label">Quick access</div>
-    <div class="option-list">
-      <div class="option-item" onclick="go('s3-food')">
-        <div class="opt-icon">🍔</div>
-        <div class="opt-body"><div class="opt-name">Order food</div><div class="opt-desc">From nearby restaurants</div></div>
-        <div class="opt-badge">Popular</div>
-      </div>
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">🔄</div>
-        <div class="opt-body"><div class="opt-name">Multiple waybills</div><div class="opt-desc">Batch pickup or delivery across locations</div></div>
-        <div class="opt-badge">Batch</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Screen 2a: Ride options -->
-  <div class="screen" id="s2-ride">
-    <div class="hero">
-      <div class="hero-tag">Rides</div>
-      <h1>Where are you <em>headed?</em></h1>
+    <!-- Screen 2a: Ride options -->
+    <div class="screen" id="s2-ride">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Rides</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Where are you <em>headed?</em></h1>
+      </div>
+      <div class="section-label">Choose ride type</div>
+      <div class="option-list">
+        <div class="option-item" onclick="go('s3-ride-now')">
+          <div class="opt-icon">⚡</div>
+          <div class="opt-body"><div class="opt-name">Ride now</div><div class="opt-desc">Instant pickup, driver arrives in minutes</div></div>
+          <div class="opt-badge">~5 min</div>
+        </div>
+        <div class="option-item" onclick="go('s3-ride-multi')">
+          <div class="opt-icon">🗺️</div>
+          <div class="opt-body"><div class="opt-name">Multi-stop ride</div><div class="opt-desc">A → B → C, multiple destinations</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s3-ride-schedule')">
+          <div class="opt-icon">🕐</div>
+          <div class="opt-body"><div class="opt-name">Schedule a ride</div><div class="opt-desc">Book ahead for a specific date & time</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
     </div>
-    <div class="section-label">Choose ride type</div>
-    <div class="option-list">
-      <div class="option-item" onclick="go('s3-ride-now')">
-        <div class="opt-icon">⚡</div>
-        <div class="opt-body"><div class="opt-name">Ride now</div><div class="opt-desc">Instant pickup, driver arrives in minutes</div></div>
-        <div class="opt-badge">~5 min</div>
-      </div>
-      <div class="option-item" onclick="go('s3-ride-schedule')">
-        <div class="opt-icon">🕐</div>
-        <div class="opt-body"><div class="opt-name">Schedule a ride</div><div class="opt-desc">Book ahead for a specific date & time</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-      <div class="option-item" onclick="go('s3-ride-multi')">
-        <div class="opt-icon">🗺️</div>
-        <div class="opt-body"><div class="opt-name">Multi-stop ride</div><div class="opt-desc">A → B → C, multiple destinations</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-    </div>
-    <div class="spacer"></div>
-  </div>
 
-  <!-- Screen 2b: Errand options -->
-  <div class="screen" id="s2-errand">
-    <div class="hero">
-      <div class="hero-tag">Errands</div>
-      <h1>What should we <em>handle?</em></h1>
+    <!-- Screen 2b: Errand options -->
+    <div class="screen" id="s2-errand">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Errands</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>What should we <em>handle?</em></h1>
+      </div>
+      <div class="option-list">
+        <div class="option-item" onclick="go('s3-delivery')">
+          <div class="opt-icon">📦</div>
+          <div class="opt-body"><div class="opt-name">Item delivery</div><div class="opt-desc">Pick up & drop off, single or multiple stops</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s3-food')">
+          <div class="opt-icon">🍔</div>
+          <div class="opt-body"><div class="opt-name">Food order</div><div class="opt-desc">Order from one or multiple restaurants</div></div>
+          <div class="opt-badge">Popular</div>
+        </div>
+        <div class="option-item" onclick="go('s3-grocery')">
+          <div class="opt-icon">🛒</div>
+          <div class="opt-body"><div class="opt-name">Grocery shopping</div><div class="opt-desc">We buy and deliver your list</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s3-laundry')">
+          <div class="opt-icon">👕</div>
+          <div class="opt-body"><div class="opt-name">Laundry pickup</div><div class="opt-desc">Drop off or collect your laundry</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s3-waybill')">
+          <div class="opt-icon">📋</div>
+          <div class="opt-body"><div class="opt-name">Waybill</div><div class="opt-desc">Pickup or drop off waybill to different terminals</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s3-pharmacy')">
+          <div class="opt-icon">💊</div>
+          <div class="opt-body"><div class="opt-name">Pharmacy run</div><div class="opt-desc">Get your medications delivered fast</div></div>
+          <div class="opt-badge">New</div>
+        </div>
+      </div>
     </div>
-    <div class="option-list">
-      <div class="option-item" onclick="go('s3-delivery')">
-        <div class="opt-icon">📦</div>
-        <div class="opt-body"><div class="opt-name">Item delivery</div><div class="opt-desc">Pick up & drop off, single or multiple stops</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-      <div class="option-item" onclick="go('s3-food')">
-        <div class="opt-icon">🍔</div>
-        <div class="opt-body"><div class="opt-name">Food order</div><div class="opt-desc">Order from one or multiple restaurants</div></div>
-        <div class="opt-badge">Popular</div>
-      </div>
-      <div class="option-item" onclick="go('s3-grocery')">
-        <div class="opt-icon">🛒</div>
-        <div class="opt-body"><div class="opt-name">Grocery shopping</div><div class="opt-desc">We buy and deliver your list</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-      <div class="option-item" onclick="go('s3-laundry')">
-        <div class="opt-icon">👕</div>
-        <div class="opt-body"><div class="opt-name">Laundry pickup</div><div class="opt-desc">Drop off or collect your laundry</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-      <div class="option-item" onclick="go('s3-waybill')">
-        <div class="opt-icon">📋</div>
-        <div class="opt-body"><div class="opt-name">Waybill</div><div class="opt-desc">Pickup or drop off waybill to different terminals</div></div>
-        <div class="opt-arrow">›</div>
-      </div>
-      <div class="option-item" onclick="go('s3-pharmacy')">
-        <div class="opt-icon">💊</div>
-        <div class="opt-body"><div class="opt-name">Pharmacy run</div><div class="opt-desc">Get your medications delivered fast</div></div>
-        <div class="opt-badge">New</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Screen 3: Ride now -->
-  <div class="screen" id="s3-ride-now">
-    <div class="hero">
-      <div class="hero-tag">Ride now</div>
-      <h1>Set your <em>route</em></h1>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup</div><div class="stop-value">Current location</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Drop-off</div><div class="stop-value">Where to?</div></div></div>
-      <div class="add-stop">＋ Add a stop</div>
-    </div>
-    <div class="schedule-row" onclick="toggleSchedule(this)">
-      <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a date and time</div></div></div>
-      <div class="toggle"><div class="toggle-thumb"></div></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Find a driver →</button>
-  </div>
-
-  <!-- Screen 3: Food -->
-  <div class="screen" id="s3-food">
-    <div class="hero">
-      <div class="hero-tag">Food order</div>
-      <h1>How are you <em>ordering?</em></h1>
-    </div>
-    <div class="section-label">Number of restaurants</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">Single restaurant</div>
-      <div class="chip" onclick="selectChip(this)">Multiple restaurants</div>
-    </div>
-    <div class="section-label">Delivery type</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">Deliver to me</div>
-      <div class="chip" onclick="selectChip(this)">Multiple drop-offs</div>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot amber"></div><div><div class="stop-label">Restaurant</div><div class="stop-value">Search restaurant name</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Your address</div></div></div>
-    </div>
-    <div class="schedule-row" onclick="toggleSchedule(this)">
-      <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a time</div></div></div>
-      <div class="toggle"><div class="toggle-thumb"></div></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
-  </div>
-
-  <!-- Screen 3: Delivery -->
-  <div class="screen" id="s3-delivery">
-    <div class="hero">
-      <div class="hero-tag">Item delivery</div>
-      <h1>Plan your <em>delivery</em></h1>
-    </div>
-    <div class="section-label">Route type</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">A → B</div>
-      <div class="chip" onclick="selectChip(this)">A → B → C</div>
-      <div class="chip" onclick="selectChip(this)">A → B, C, D</div>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup from</div><div class="stop-value">Enter address</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Enter address</div></div></div>
-      <div class="add-stop">＋ Add another stop</div>
-    </div>
-    <div class="schedule-row" onclick="toggleSchedule(this)">
-      <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a date and time</div></div></div>
-      <div class="toggle"><div class="toggle-thumb"></div></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
-  </div>
-
-  <!-- Screen 3: Laundry -->
-  <div class="screen" id="s3-laundry">
-    <div class="hero">
-      <div class="hero-tag">Laundry</div>
-      <h1>Pickup or <em>drop-off?</em></h1>
-    </div>
-    <div class="section-label">Service type</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">Pickup laundry</div>
-      <div class="chip" onclick="selectChip(this)">Deliver laundry</div>
-      <div class="chip" onclick="selectChip(this)">Both</div>
-    </div>
-    <div class="section-label">Locations</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">Single location</div>
-      <div class="chip" onclick="selectChip(this)">Multiple locations</div>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup from</div><div class="stop-value">Enter address</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Drop off at</div><div class="stop-value">Laundry address</div></div></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
-  </div>
-
-  <!-- Screen 3: Waybill -->
-  <div class="screen" id="s3-waybill">
-    <div class="hero">
-      <div class="hero-tag">Waybills</div>
-      <h1>Handle your <em>waybill</em></h1>
-    </div>
-    <div class="section-label">What do you need?</div>
-    <div class="option-list">
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">📤</div>
-        <div class="opt-body"><div class="opt-name">Pick up waybill</div><div class="opt-desc">Collect from sender, deliver to you</div></div>
-        <div class="opt-arrow">›</div>
+    <!-- Screen 3: Ride now -->
+    <div class="screen" id="s3-ride-now">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Ride now</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Set your <em>route</em></h1>
       </div>
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">📥</div>
-        <div class="opt-body"><div class="opt-name">Drop off waybill</div><div class="opt-desc">We take it to the courier or recipient</div></div>
-        <div class="opt-arrow">›</div>
+      <div class="route-builder">
+        <div class="route-stop">
+          <div class="stop-dot green"></div>
+          <div style="width: 100%;">
+            <div class="stop-label">Pickup</div>
+            <input type="text" name="pickup" placeholder="Enter current location">
+          </div>
+        </div>
+        <div class="route-stop">
+          <div class="stop-dot red"></div>
+          <div style="width: 100%;">
+            <div class="stop-label">Drop-off</div>
+            <input type="text" name="pickup" placeholder="Where to ?">
+          </div>
+        </div>
       </div>
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">🔄</div>
-        <div class="opt-body"><div class="opt-name">Multiple waybills</div><div class="opt-desc">Batch pickup or delivery across locations</div></div>
-        <div class="opt-badge">Batch</div>
-      </div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Find a driver →</button>
     </div>
-    <div class="spacer"></div>
-  </div>
 
-  <!-- Screen 3: Grocery -->
-  <div class="screen" id="s3-grocery">
-    <div class="hero">
-      <div class="hero-tag">Groceries</div>
-      <h1>We'll shop <em>for you</em></h1>
-    </div>
-    <div class="section-label">Number of stores</div>
-    <div class="chip-row">
-      <div class="chip selected" onclick="selectChip(this)">One store</div>
-      <div class="chip" onclick="selectChip(this)">Multiple stores</div>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot amber"></div><div><div class="stop-label">Shop at</div><div class="stop-value">Store name or location</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Your address</div></div></div>
-      <div class="add-stop">＋ Add another store</div>
-    </div>
-    <div class="schedule-row" onclick="toggleSchedule(this)">
-      <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a time</div></div></div>
-      <div class="toggle"><div class="toggle-thumb"></div></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
-  </div>
-
-  <!-- Screen 3: Pharmacy -->
-  <div class="screen" id="s3-pharmacy">
-    <div class="hero">
-      <div class="hero-tag">Pharmacy</div>
-      <h1>Get your <em>meds</em> fast</h1>
-    </div>
-    <div class="option-list">
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">🏥</div>
-        <div class="opt-body"><div class="opt-name">Nearest pharmacy</div><div class="opt-desc">We find the closest one to you</div></div>
-        <div class="opt-badge">Fastest</div>
+    <!-- Screen 3: Food -->
+    <div class="screen" id="s3-food">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Food order</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>How are you <em>ordering?</em></h1>
       </div>
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">📍</div>
-        <div class="opt-body"><div class="opt-name">Specific pharmacy</div><div class="opt-desc">You choose which pharmacy</div></div>
-        <div class="opt-arrow">›</div>
+      <div class="section-label">Number of restaurants</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">Single restaurant</div>
+        <div class="chip" onclick="selectChip(this)">Multiple restaurants</div>
       </div>
-      <div class="option-item" onclick="go('s4-confirm')">
-        <div class="opt-icon">🔄</div>
-        <div class="opt-body"><div class="opt-name">Multiple pharmacies</div><div class="opt-desc">Check stock across locations</div></div>
-        <div class="opt-arrow">›</div>
+      <div class="section-label">Delivery type</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">Deliver to me</div>
+        <div class="chip" onclick="selectChip(this)">Multiple drop-offs</div>
       </div>
-    </div>
-    <div class="spacer"></div>
-  </div>
-
-  <!-- Screen 3: Scheduled ride -->
-  <div class="screen" id="s3-ride-schedule">
-    <div class="hero">
-      <div class="hero-tag">Schedule a ride</div>
-      <h1>Book <em>ahead</em> of time</h1>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup</div><div class="stop-value">Your location</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Drop-off</div><div class="stop-value">Destination</div></div></div>
-    </div>
-    <div class="confirm-card">
-      <div class="confirm-title">📅 When?</div>
-      <div class="confirm-row"><span class="label">Date</span><span class="value">Select date →</span></div>
-      <div class="confirm-row"><span class="label">Time</span><span class="value">Select time →</span></div>
-      <div class="confirm-row"><span class="label">Reminder</span><span class="value">30 mins before</span></div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Confirm booking →</button>
-  </div>
-
-  <!-- Screen 3: Multi-stop ride -->
-  <div class="screen" id="s3-ride-multi">
-    <div class="hero">
-      <div class="hero-tag">Multi-stop ride</div>
-      <h1>Plan your <em>stops</em></h1>
-    </div>
-    <div class="route-builder">
-      <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Start</div><div class="stop-value">Current location</div></div></div>
-      <div class="route-stop"><div class="stop-dot amber"></div><div><div class="stop-label">Stop 1</div><div class="stop-value">Enter address</div></div></div>
-      <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Final stop</div><div class="stop-value">Enter address</div></div></div>
-      <div class="add-stop">＋ Add a stop</div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s4-confirm')">Find a driver →</button>
-  </div>
-
-  <!-- Screen 4: Confirm -->
-  <div class="screen" id="s4-confirm">
-    <div class="hero">
-      <div class="hero-tag">Almost done</div>
-      <h1>Confirm your <em>order</em></h1>
-    </div>
-    <div class="confirm-card">
-      <div class="confirm-title">📦 Order summary</div>
-      <div class="confirm-row"><span class="label">Service</span><span class="value">Item delivery</span></div>
-      <div class="confirm-row"><span class="label">Route</span><span class="value">A → B → C</span></div>
-      <div class="confirm-row"><span class="label">Pickup</span><span class="value">Now</span></div>
-      <div class="confirm-row"><span class="label">Estimated time</span><span class="value">~25 min</span></div>
-    </div>
-    <div class="confirm-card">
-      <div class="price-row">
-        <span class="price-label">Estimated cost</span>
-        <span class="price-value">₦2,400</span>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot amber"></div><div><div class="stop-label">Restaurant</div><div class="stop-value">Search restaurant name</div></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Your address</div></div></div>
       </div>
-    </div>
-    <div class="spacer"></div>
-    <button class="cta-btn" onclick="go('s5-done')">Place order →</button>
-    <button class="cta-btn secondary mt16" onclick="goBack()">Edit order</button>
-  </div>
-
-  <!-- Screen 5: Done -->
-  <div class="screen" id="s5-done">
-    <div class="success-center">
-      <div style="font-size:56px;margin-bottom:20px;">🎉</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:8px;">Order placed!</div>
-      <div style="font-size:14px;color:var(--muted);line-height:1.6;max-width:260px;">A rider has been assigned. You'll get a confirmation shortly.</div>
-      <div style="margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;width:100%;">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Tracking ID</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--accent);">#SWG-20481</div>
+      <div class="schedule-row" onclick="toggleSchedule(this)">
+        <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a time</div></div></div>
+        <div class="toggle"><div class="toggle-thumb"></div></div>
       </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
     </div>
-    <button class="cta-btn" onclick="restart()">New order →</button>
+
+    <!-- Screen 3: Delivery -->
+    <div class="screen" id="s3-delivery">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Item delivery</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Plan your <em>delivery</em></h1>
+      </div>
+      <div class="section-label">Route type</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">A → B</div>
+        <div class="chip" onclick="selectChip(this)">A → B → C</div>
+        <div class="chip" onclick="selectChip(this)">A → B, C, D</div>
+      </div>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup from</div><div class="stop-value">Enter address</div></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Enter address</div></div></div>
+        <div class="add-stop">＋ Add another stop</div>
+      </div>
+      <div class="schedule-row" onclick="toggleSchedule(this)">
+        <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a date and time</div></div></div>
+        <div class="toggle"><div class="toggle-thumb"></div></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
+    </div>
+
+    <!-- Screen 3: Laundry -->
+    <div class="screen" id="s3-laundry">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Laundry</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Pickup or <em>drop-off?</em></h1>
+      </div>
+      <div class="section-label">Service type</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">Pickup laundry</div>
+        <div class="chip" onclick="selectChip(this)">Deliver laundry</div>
+        <div class="chip" onclick="selectChip(this)">Both</div>
+      </div>
+      <div class="section-label">Locations</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">Single location</div>
+        <div class="chip" onclick="selectChip(this)">Multiple locations</div>
+      </div>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot green"></div><div><div class="stop-label">Pickup from</div><div class="stop-value">Enter address</div></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Drop off at</div><div class="stop-value">Laundry address</div></div></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
+    </div>
+
+    <!-- Screen 3: Waybill -->
+    <div class="screen" id="s3-waybill">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Waybills</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Handle your <em>waybill</em></h1>
+      </div>
+      <div class="section-label">What do you need?</div>
+      <div class="option-list">
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">📤</div>
+          <div class="opt-body"><div class="opt-name">Pick up waybill</div><div class="opt-desc">Collect from sender, deliver to you</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">📥</div>
+          <div class="opt-body"><div class="opt-name">Drop off waybill</div><div class="opt-desc">We take it to the courier or recipient</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">🔄</div>
+          <div class="opt-body"><div class="opt-name">Multiple waybills</div><div class="opt-desc">Batch pickup or delivery across locations</div></div>
+          <div class="opt-badge">Batch</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- Screen 3: Grocery -->
+    <div class="screen" id="s3-grocery">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Groceries</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>We'll shop <em>for you</em></h1>
+      </div>
+      <div class="section-label">Number of stores</div>
+      <div class="chip-row">
+        <div class="chip selected" onclick="selectChip(this)">One store</div>
+        <div class="chip" onclick="selectChip(this)">Multiple stores</div>
+      </div>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot amber"></div><div><div class="stop-label">Shop at</div><div class="stop-value">Store name or location</div></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div><div class="stop-label">Deliver to</div><div class="stop-value">Your address</div></div></div>
+        <div class="add-stop">＋ Add another store</div>
+      </div>
+      <div class="schedule-row" onclick="toggleSchedule(this)">
+        <div class="schedule-left"><span class="schedule-icon">🕐</span><div class="schedule-text"><div class="title">Schedule for later</div><div class="sub">Choose a time</div></div></div>
+        <div class="toggle"><div class="toggle-thumb"></div></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Continue →</button>
+    </div>
+
+    <!-- Screen 3: Pharmacy -->
+    <div class="screen" id="s3-pharmacy">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Pharmacy</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Get your <em>meds</em> fast</h1>
+      </div>
+      <div class="option-list">
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">🏥</div>
+          <div class="opt-body"><div class="opt-name">Nearest pharmacy</div><div class="opt-desc">We find the closest one to you</div></div>
+          <div class="opt-badge">Fastest</div>
+        </div>
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">📍</div>
+          <div class="opt-body"><div class="opt-name">Specific pharmacy</div><div class="opt-desc">You choose which pharmacy</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+        <div class="option-item" onclick="go('s4-confirm')">
+          <div class="opt-icon">🔄</div>
+          <div class="opt-body"><div class="opt-name">Multiple pharmacies</div><div class="opt-desc">Check stock across locations</div></div>
+          <div class="opt-arrow">›</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- Screen 3: Scheduled ride -->
+    <div class="screen" id="s3-ride-schedule">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Schedule a ride</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Book <em>ahead</em> of time</h1>
+      </div>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot green"></div><div style="width: 100%;"><div class="stop-label">Pickup</div><input type="text" name="pickup" placeholder="Enter your location"></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div style="width: 100%;"><div class="stop-label">Drop-off</div><input type="text" name="pickup" placeholder="Destination"></div></div>
+        <div class="add-stop">＋ Add a stop</div>
+      </div>
+      <div class="confirm-card">
+        <div class="confirm-title">📅 When?</div>
+        <div class="confirm-row"><span class="label">Date</span><span class="value">Select date →</span></div>
+        <div class="confirm-row"><span class="label">Time</span><span class="value">Select time →</span></div>
+        <div class="confirm-row"><span class="label">Reminder</span><span class="value">30 mins before</span></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Confirm booking →</button>
+    </div>
+
+    <!-- Screen 3: Multi-stop ride -->
+    <div class="screen" id="s3-ride-multi">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Multi-stop ride</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Plan your <em>stops</em></h1>
+      </div>
+      <div class="route-builder">
+        <div class="route-stop"><div class="stop-dot green"></div><div style="width: 100%;"><div class="stop-label">Start</div><input type="text" name="pickup" placeholder="Enter current location"></div></div>
+        <div class="route-stop"><div class="stop-dot amber"></div><div style="width: 100%;"><div class="stop-label">Stop 1</div><input type="text" name="pickup" placeholder="Enter address"></div></div>
+        <div class="route-stop"><div class="stop-dot red"></div><div style="width: 100%;"><div class="stop-label">Final stop</div><input type="text" name="pickup" placeholder="Enter address"></div></div>
+        <div class="add-stop">＋ Add a stop</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s4-confirm')">Find a driver →</button>
+    </div>
+
+    <!-- Screen 4: Confirm -->
+    <div class="screen" id="s4-confirm">
+      <div class="hero">
+        <div class="hero-tag-div" >
+          <div class="hero-tag">Almost done</div>
+          <div class="back-btn" id="back-btn" onclick="goBack()">←</div>
+        </div>
+        <h1>Confirm your <em>order</em></h1>
+      </div>
+      <div class="confirm-card">
+        <div class="confirm-title">📦 Order summary</div>
+        <div class="confirm-row"><span class="label">Service</span><span class="value">Item delivery</span></div>
+        <div class="confirm-row"><span class="label">Route</span><span class="value">A → B → C</span></div>
+        <div class="confirm-row"><span class="label">Pickup</span><span class="value">Now</span></div>
+        <div class="confirm-row"><span class="label">Estimated time</span><span class="value">~25 min</span></div>
+      </div>
+      <div class="confirm-card">
+        <div class="price-row">
+          <span class="price-label">Estimated cost</span>
+          <span class="price-value">₦2,400</span>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="cta-btn" onclick="go('s5-done')">Place order →</button>
+      <button class="cta-btn secondary mt16" onclick="goBack()">Edit order</button>
+    </div>
+
+    <!-- Screen 5: Done -->
+    <div class="screen" id="s5-done">
+      <div class="success-center">
+        <div style="font-size:56px;margin-bottom:20px;">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:8px;">Order placed!</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.6;max-width:260px;">A rider has been assigned. You'll get a confirmation shortly.</div>
+        <div style="margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;width:100%;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Tracking ID</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--accent);">#SWG-20481</div>
+        </div>
+      </div>
+      <button class="cta-btn" onclick="restart()">New order →</button>
+    </div>
   </div>
-</div>
 
 <script>
   const navHistory = [];
